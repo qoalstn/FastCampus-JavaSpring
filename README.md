@@ -326,3 +326,147 @@ for (int i = 0; i < b.length; i++) {
 *	*	*	*	
 *	*	*	*	*
 ```
+
+
+## ch7. 연산자와 명령문
+- Scanner활용
+
+    ```java
+    import java.util.*;
+    public class ScannerTest {
+    
+        // 키보드 == (스트림, 통로, 빨대) ==> 자바
+        // 1. 입력스트림  : System.in(인풋스트림)
+        // 2. 출력스트림
+        public static void main(String[] args) {
+            Scanner scan = new Scanner(System.in);
+            System.out.println("정수를 입력하세요");
+            int num = scan.nextInt(); // 블럭상태
+            System.out.println("num = " + num);
+    
+            System.out.println("실수를 입력하세요");
+            float f = scan.nextFloat();
+            System.out.println("f = " + f);
+    
+            System.out.println("문자열를 입력하세요");
+            String str = scan.next(); // 공백이 있을 경우 공백앞까지 가져옴
+            System.out.println("str = " +str);
+    
+            // 위의 next()는 공백 앞까지만 가져오기 때문에 스트림(통로)에는 아직 공백 뒤의 문자열과 enter가 남아있다
+            // 남은 문자와 enter가 아래의 nextLine()과 만나면 의도치 않게 남아있는 문자가 출력되어버리므로 버퍼 비우기
+            scan.nextLine();
+    
+            System.out.println("문자열를 입력하세요");
+            String str2 = scan.nextLine(); // 문자열 한줄을 가져옴
+            System.out.println("str2 = " +str2);
+    
+            scan.close();
+        }
+    }
+    ```
+
+
+- **연산자의 종류**
+    - 단항 연산자 (증가연산자++, 감소연산자 --)
+      전위(++a, --a) : 증감 후 값을 사용
+      후외(a++, b--) : 값을 사용한 후 증감
+    - 이항 연산자 a+b
+    - 삼항 연산자 a>0 ? true일 경우 값 : false일 경우
+    - 산술연산자 + - * / %  // 실습 ArithmeticOperTest.java
+    - 관계연산자 < >  >= == !== instanceof // 좌항과 우항의 대소관계를 비교한다, 결과는 true 또는 false
+    - 논리연산자
+
+        ```java
+            && 논리곱 연산 : 둘 다 참이어야 참
+            || 논리합 연산 : 하나라도 참이면 참
+            !(NOT) 논리부정 연산 : 참이면 거짓, 거짓이면 참
+        ```
+
+    - 복합대입(*)연산자 +=, -=, *=, /=, %= //산술연산자+대입연산자, 자신과 값을 연산 후 대입 (누적)
+- **명령문의 종류**
+    - if  : 조건식이 참이면 블럭의 코드가 실행
+    - if-else : 조건식이 참이면 if블럭의 코드가 거짓이면 else블럭의 코드가 실행
+    - if(a)-else if(b)-else if(c)-else : 조건식a가 참이면 if블럭, 조건식 a가 거짓이고 b가 참일때 else if(b)블럭, 조건식 a,b가 거짓이고 c가 참일때 else if(c)블럭, 모두 거짓일 때 else블럭 실행
+    - switch-case : 주로 다중 선택에 사용, 다중 if문보다 간결한 대신, 사용 영역이 if-else에 비해 제한적이다
+
+        ```java
+            switch (수식){
+                        case "상수1":
+                            break; // 탈출, 없을 경우 다음 case문까지 연속 실행
+                        
+                        case "상수2":
+                            // .. 
+                            break;
+                        
+                        default: // 조건과 일치하는 case가 없을 경우 기본 실행 코드
+                    }
+        ```
+
+    - 반복문(loop)
+        - for(초기식; 조건식; 증감식) {..} : 조건식이 참일동안 블럭 내 코드 반복
+        - for(변수 : 컬렉션){..} : 데이터를 하나씩 꺼내온다
+
+            ```java
+                int[] nums = {1,2,3,4,5};
+                
+                for(int su : nums) {
+                	System.out.print(su); //12345 
+                }
+            ```
+
+        - while : 먼저 조건식 검사 후 반복할 문장을 실행
+
+            ```java
+                int i = 0; // 초기식;
+                
+                while(i <= 5){ //조건식
+                	System.out.print(i);
+                	i++; //증감식;
+                } // 조건이 거짓이면 탈
+            ```
+
+        - do-while : 반복할 문장을 한 번 실행 후 조건식에 따라 반복
+
+            ```java
+                초기식;
+                
+                do{
+                ...
+                } while(조건식);
+            ```
+
+        - 이중 for문 : 반복문 안에 또다른 반복문, 중첩반복
+
+            ```java
+                for (int i = 0; i < b.length; i++) {
+                        for (int j = 0; j < b[i].length; j++) {
+                            System.out.print("*"+"\t");
+                        }
+                    } 
+            ```
+
+    - break, continue (반복문의 실행 상태를 제어)
+        - break : 반복문을 중단하고 반복문 바깥으로 이동
+
+            ```java
+                //Q. char[ ] c={‘s’,’h’,’u’,’t’,’d’,’o’,’w’,’n’};
+                // 위 배열의 값을 출력 중 ‘o’라는 문자를 만나면 반복을 중지하세요.
+                
+                        char[ ] c={'s','h','u','t','d','o','w','n'};
+                        for (int i = 0; i < c.length; i++) {
+                            if(c[i] =='o') break;
+                            System.out.print(c[i]); // shutd
+                        }
+            ```
+
+        - continue : 현재 반복문에서 처리를 중단하고 다음 조건값에 대한 반복문 처리를 수행
+
+            ```java
+                //Q. 1~10까지의 수 중 3의 배수의 개수를 구하여 출력하세요.
+                        int count=0;
+                        for (int i = 1; i <= 10; i++) {
+                            if(i%3 != 0) continue;
+                            count++;
+                        }
+                        System.out.println("count : " + count); // 3
+            ```
