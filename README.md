@@ -533,7 +533,7 @@ for (int i = 0; i < b.length; i++) {
     - 2.객체를 생성 (메모리에 저장) : new연산자와 생성자 메소드를 이용
 
         ```java
-        	 new Person(); // 인스턴스(instance)
+             new Person(); // 인스턴스(instance)
         new연산자 생성자메소드
         ```
 
@@ -604,3 +604,242 @@ for (int i = 0; i < b.length; i++) {
 - 클래스 접근 방법
     1. class full-name 이 (java.lang.String)
     2. import를 이용 (import java.lang.*; )
+
+## ch4. VO클래스
+
+- **정보은닉이란?** 다른 객체에게 자신의 정보를 숨기고 자신의 동작, 기능, 연산만을 통해 접근을 허용하는 것, 클래스 외부에서 특정 정보 (상태정보)에 접근을 막는다는 의미
+- 은닉된(private) 멤버에 접근하는 방법
+    1. private으로 은닉된 변수는 **setter/getter메소드로 접근**이 가능하다
+        - 메소드를 사용하는 이유 : 로직 수행을 통해 데이터 검증이 가능하다
+    2. **생성자 메소드**를 이용한 객체 초기화
+        1. default 생성자
+        2. 생성자 메소드 오버로딩Overloading을 이용하여 객체 생성시 원하는 값으로 초기화하기 , ** default생성자는 원래 클래스 생성시 자동으로 만들어진다. 다만, 오버로딩된 생성자메소드를 선언할 경우 기본생성자는 자동 생성 되지 않는다 → 필요할 경우 기본생성자를 선언하여 사용, 일반적으로 만들어놓는 것이 좋다
+    3. **toString() 메소드** - 객체가 가진 모든 변수의 값을 문자열로 출력하는 용도
+        1. 변수만 호출해도 toString(); 리턴값이 출력됨 (단, VO내 toString()이라는 이름의 메소드가 있을 경우만) (vo.toString() == vo)
+
+    ```java
+    public class PersonVO {
+        private String name;
+        private int age;
+        private String phone;
+    
+    		// 1. getter and setter
+        public String getName() {
+            return name; // this.name; // 중복되는 변수가 없을 경우 this는 생략 가능
+        }
+    
+        public void setName(String name) {
+            this.name = name;
+        }
+    
+        .. more getter and setter
+    
+        // 2-a. default 생성자
+        public PersonVO(){
+            // 초기화 동작을 넣어준다
+            this.name = "홍길동";
+            this.age = 30;
+            this.phone = "010-0000-0000";
+        }
+    
+        // 2-b. 생성자메소드를 오버로딩 - 원하는 값으로 초기화
+        public PersonVO(String name, int age, String phone){
+            this.name = name;
+            this.age = age;
+            this.phone = phone;
+        }
+    		
+    		// 3. toString()
+        public String toString() {
+            return "name='" + name + "', age=" + age + ", phone='" + phone +"'";
+        }
+    }
+    ```
+
+    ```java
+    import fc.java.model.PersonVO;
+    
+    public class Person {
+        public static void main(String[] args) {
+    
+            // vo.name // 에러. PersonVO의 멤버변수 name은 private으로 선언되었기 때문에 직접 접근이 되지 않음(정보은닉)
+            // 1. getter와 setter를 사용한 private변수 접근
+    				PersonVO testVO = new PersonVO();
+            testVO.setName("김테스트");
+            System.out.println("name : "+ testVO.getName());
+    
+            // 2-a. default 생성자메소드를 이용한 초기화
+    				PersonVO vo = new PersonVO();
+            System.out.println("2-a. default 생성자메소드를 이용한 초기화 : " + vo.getName());
+    
+            // 2-b. 생성자 메소드 오버로딩
+            PersonVO vo1 = new PersonVO("은비",2,"010-0000-0000");
+            PersonVO vo2 = new PersonVO("까비",2,"010-1111-1111");
+    
+            System.out.println("2-b. vo1.getName() = " + vo1.getName());
+            System.out.println("2-b. vo2.getName() = " + vo2.getName());
+    
+            // 3. toString() 메소드 (strVO.toString() == strVO)
+            PersonVO strVO = new PersonVO();
+            System.out.println("3-1. stVO.toString() = " + strVO.toString());
+            System.out.println("3-2. strVO : " + strVO); 
+    
+        }
+    }
+    
+    결과
+    // 1. name : 김테스트
+    // 2-a. default 생성자메소드를 이용한 초기화 : 홍길동
+    // 2-b. vo1.getName() = 은비
+    // 2-b. vo2.getName() = 까비
+    // 3-1. stVO.toString() = name='홍길동', age=30, phone='010-0000-0000'
+    // 3-2. strVO : name='홍길동', age=30, phone='010-0000-0000'
+    ```
+
+- 잘 설계된 VO클래스
+    1. 모든 상태 정보를 정보 은닉 (private)한다
+    2. 디폴트 생성자를 만드는게 좋다
+    3. 생성자 메소드를 오버로딩하여 객체를 초기화한다
+    4. setter/getter메소드를 만든다
+    5. toString()메소드를 만든다
+
+## ch5. 배열과 클래스의 관계
+
+배열(Array)과 클래스(class)는 데이터를 담는 역할에는 같지만 만들어지는 구조는 서로 다르다. **배열은 동일한 데이터를 담는 구조**이며 **클래스는 서로 다른 데이터를 담는 구조**
+
+- 일반배열과 객체배열의 초기화
+
+```java
+int[] a = new int[2];
+a[0] = 1;
+a[1] = 2;
+
+Student[] s = new Student[2];
+s[1] = new Student("학생1","컴공",22,"one@mail.com");
+s[0] = new Student("학생2","피아노",23,"two@mail.com");
+```
+
+## ch6. static과 JVM메모리 모델
+
+- **main클래스 동작 방식**
+    1.  JVM이 실행할 클래스를 찾는다.
+    2. static 키워드가 붙어있는 멤버들(예를들면 메인메소드)을 클래스를 사용하는 시점에 Method area → static-zone에 딱 한 번 자동으로 로딩한다
+    3. JVM이 static-zone에서 main()메서드를 호출한다.
+    4. 호출된 메서드를 Call Stack Frame Area(Stack Area)에 push(기계어코드를 넣고) 한 뒤 동작을 시작한다.
+
+    ```java
+    public class StaticTest{
+                public **static** void main(string[] args){
+                    int a=10;
+                    int b=20;
+                    int sum= StaticTest.hap(a,b);
+                    System.out.println(sum);
+    
+                }
+                public **static** int hap(int a, int b){
+                    int v=a+b;
+                    return v;
+                }
+            }
+    ```
+
+  ** 같은 area에 있는 메소드만 호출이 가능하다 (위의 예제에서는 메인메소드와 hap메소드가 static으로 선언되어 같은 static-zone에 있기 때문에 메인에서 hap호출이 가능하다. hap();이 static으로 선언되지 않았다면(non-static) main();에서 사용 불가)
+
+- **non-static메소드 접근 방법**
+    - 객체를 생성하여 메모리에 로딩시킨다 (new연산자로 Heap area에 생성하고 그 번지를 Method area내의 non-static-zone에 저장한다)
+        - Heap area : 생성된(new) 객체 저장
+        - Method Area
+            - static area : static멤버가 저장
+            - non-static area : Heap area에 저장된 객체 멤버 메소드의 번지를 저장
+        - Stack area : 메소드가 호출되면 수행에 필요한 만큼(지역, 매개변수)의 메모리를 임시 할당, LIFO
+
+```java
+public class NoneStaticTest{
+            public **static** void main(string[] args){
+                int a=10;
+                int b=20;
+
+								// 1. 같은 클래스의 인스턴스 메소드 호출
+								NoneStaticTest st = **new NoneStaticTest();** // 객체를 heap에 저장하고 멤버 메소드의 번지를 Method area에 저장
+                int sum= NoneStaticTest.hap(a,b); // Method area > non-static area의 hap 메소드를 호출
+                System.out.println(sum);
+								
+								// 2. 다른 클래스의 클래스 메소드(static) 호출 
+								int sum= MyUtil.hap(a,b); // new연산으로 인스턴스화 하지 않음 
+
+								// 3. 다른 클래스의 인스턴스 메소드 호출 
+								MyUtil1 my=new MyUtil1();
+								int sum= MyUtil.minus(a,b);
+            }
+
+            public int hap(int a, int b){
+                int v=a+b;
+                return v;
+            }
+        }
+--------------------------------------------------------------
+public class MyUtil{
+            public **static** int hap(int a, int b){ // 클래스 메소드 
+                int v=a+b;
+                return v;
+            }
+
+            public int minus(int a, int b){ // 인스턴스 메소드  
+                int v=a-b;
+                return v;
+            }
+        }
+```
+
+정리 : 자주 사용하는 메소드의 경우 static으로 선언하여 클래스를 인스턴스화하지 않고 바로 사용할 수 있다. static으로 선언되지 않은 메소드의 경우 new연산을 이용하여 객체를 생성 후 멤버 메소드 사용이 가능하다
+
+- **JVM이 사용하는 메모리 영역**
+    - Method Area
+        - 메서드의 바이트코드(기계어 코드)가 할당되는 공간
+          static-zone과 none-static-zone으로 나누어진다.
+          static멤버들은 static-zone에 할당된다.
+    - Heap Area
+        - 객체가 생성되는 메모리 공간(new연산자)
+        - 스택 영역은 함수 실행이 끝나면 자동으로 청소가 되지만 Heap영역은 자동 정리되지 않는다. 사용되지 않는 객체는 주기적으로 가비지 컬렉터(garbage collector)가 정리 해준다
+    - Stack Area (Call Stack Frame Area) - thread마다 독립된 Stack영역이 존재
+        - 메서드가 호출 되면 메서드의 기계어코드를 할당 받고(Native Method Area) 메서드가 실행 되는 메모리공간(Call Stack Frame Area)
+          ( 지역변수, 매개변수들이 만들어지는 공간)
+        - PC(Program Counter)에 의해서 현재 실행중인 프로그램의 위치가 관리된다.
+        - LIFO구조로 운영이 되는 메모리공간 (메서드의 호출 순서를 알 수 있다)
+    - Constant Pool(Literal Pool) - Runtime시점
+        - 상수 값 할당이 되는 메모리 공간
+        - 문자열 중 문자열 상수(Literal : 리터럴)가 할당 되는 메모리 공간
+          -생성자를 private으로 선언할 경우 객체를 생성할 수 없다. **모든 멤버가 static인 경우**는 객체를 생성하지 않아도 멤버에 접근 할 수 있기 때문에 **객체 생성을 막고 싶을 경우 생성자를 private으로 선언**한다. (예를들면 Math, System클래스)
+
+```java
+    public class MyUtil{
+    		// 생성자를 private으로 선언
+    		**private MyUtil(){ }**
+    
+        public **static** int hap(int a, int b){ 
+            int v=a+b;
+            return v;
+        }
+    
+        public **static** int minus(int a, int b){ 
+            int v=a-b;
+            return v;
+        }
+    }
+    
+    --------------------------------------------------------------
+    
+    public class NoneStaticTest{
+        public static void main(string[] args){
+            int a=10;
+            int b=20;
+    
+            // MyUtil1 my = new MyUtil1(); // 생성자가 private이기 때문에 객체 생성이 안된다 
+            int sum= MyUtil.hap(a,b); // 객체를 생성하지 않았지만 static 메소드는 접근이 가능하다  
+      }
+```
+
+- **Class, Object, Instance의 관계 (모두 객체를 나타냄)**
+    - 클래스(Class) : 객체를 모델링 하는 도구(설계도), 새로운 자료
+    - 객체 변수(Object) : 클래스를 통해서 선언되는 변수, 아직 가리키지 않은 상태
+    - 인스턴스 변수(Instance) : 구체적인 실체를 가리키는 상태, 객체가 서로 구분 되는 시점
